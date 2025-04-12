@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, g
 import sqlite3
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -9,6 +10,8 @@ DATABASE = 'wedding.db'
 
 def get_db():
     if 'db' not in g:
+        # Make sure the instance folder exists
+        os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
         g.db = sqlite3.connect(DATABASE)
         g.db.row_factory = sqlite3.Row
     return g.db
@@ -20,26 +23,32 @@ def close_db(error):
         db.close()
 
 def init_db():
-    with app.app_context():
-        db = get_db()
+    db = get_db()
+    try:
         with app.open_resource('scheme.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        db.rollback()
 
 # Routes
 @app.route('/')
 def dashboard():
+    # Initialize database if it doesn't exist
+    if not os.path.exists(DATABASE):
+        init_db()
+    
     db = get_db()
     
     # Get expenses summary
     expenses = db.execute('SELECT category, SUM(cost) as total FROM expenses GROUP BY category ORDER BY total DESC').fetchall()
     total_expenses = db.execute('SELECT SUM(cost) as grand_total FROM expenses').fetchone()['grand_total'] or 0
     
-    # Get guest summary
+    # Get guest count
     guest_count = db.execute('SELECT COUNT(*) as count FROM guests').fetchone()['count']
-    total_pax = db.execute('SELECT SUM(pax) as total FROM guests').fetchone()['total'] or 0
     
-    # Get guest summary by side
+    # Get guest summary
     guest_summary = db.execute('''
         SELECT side, 
                COUNT(*) as count,
@@ -47,6 +56,9 @@ def dashboard():
         FROM guests 
         GROUP BY side
     ''').fetchall()
+    
+    # Get total pax
+    total_pax = db.execute('SELECT SUM(pax) as total FROM guests').fetchone()['total'] or 0
     
     return render_template('dashboard.html',
                          expenses=expenses,
@@ -92,5 +104,7 @@ def guests():
     return render_template('guests.html', guests=guests)
 
 if __name__ == '__main__':
-    init_db()
+    # Initialize database if running locally
+    if not os.path.exists(DATABASE):
+        init_db()
     app.run(debug=True)
