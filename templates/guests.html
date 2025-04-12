@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Guests{% endblock %}
+
+{% block content %}
+<div class="guests">
+    <h2>Add Guest</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="pax">Number of Pax:</label>
+            <input type="number" id="pax" name="pax" min="1" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="side">Side:</label>
+            <select id="side" name="side" required>
+                <option value="Bride">Bride</option>
+                <option value="Groom">Groom</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="Invited">Invited</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Declined">Declined</option>
+            </select>
+        </div>
+        
+        <button type="submit">Add Guest</button>
+    </form>
+
+    <div class="export-section">
+        <button onclick="exportToExcel()" class="export-btn">Export to Excel</button>
+    </div>
+
+    <h2>Guest List</h2>
+    <div class="guest-list">
+        <table id="guestTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Pax</th>
+                    <th>Side</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for guest in guests %}
+                <tr>
+                    <td>{{ guest['name'] }}</td>
+                    <td>{{ guest['pax'] }}</td>
+                    <td>{{ guest['side'] }}</td>
+                    <td>{{ guest['status'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+function exportToExcel() {
+    const table = document.getElementById('guestTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Guests"});
+    XLSX.writeFile(wb, 'wedding_guests.xlsx');
+}
+</script>
+{% endblock %}

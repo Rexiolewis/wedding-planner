@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Expenses{% endblock %}
+
+{% block content %}
+<div class="expenses">
+    <h2>Add Expense</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="item">Item:</label>
+            <input type="text" id="item" name="item" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category" required>
+                <option value="Venue">Venue</option>
+                <option value="Catering">Catering</option>
+                <option value="Decoration">Decoration</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Photography">Photography</option>
+                <option value="Music">Music</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Garland">Garland</option>
+                <option value="Mehendi">Mehendi</option>
+                <option value="Honeymoon">Honeymoon</option>
+                <option value="Jewellry">Jewellry</option>
+                <option value="Wedding Card">Wedding Card</option>
+                <option value="Nallungu">Nallungu</option>
+                <option value="ROM">ROM</option>
+                <option value="Priest">Priest</option>
+                <option value="Wedding Tradition">Wedding Tradition Thing</option>
+                <option value="Wedding Door Gift">Wedding Door Gift</option>
+                <option value="Pre-wedding">Pre-wedding</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="cost">Cost (RM):</label>
+            <input type="number" id="cost" name="cost" step="0.01" required>
+        </div>
+        
+        <button type="submit">Add Expense</button>
+    </form>
+
+    <div class="export-section">
+        <button onclick="exportToExcel()" class="export-btn">Export to Excel</button>
+    </div>
+
+    <h2>Expense List</h2>
+    <div class="expense-list">
+        <table id="expenseTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Cost (RM)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense['date'] }}</td>
+                    <td>{{ expense['item'] }}</td>
+                    <td>{{ expense['category'] }}</td>
+                    <td>RM {{ "{:,.2f}".format(expense['cost']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+function exportToExcel() {
+    const table = document.getElementById('expenseTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Expenses"});
+    XLSX.writeFile(wb, 'wedding_expenses.xlsx');
+}
+</script>
+{% endblock %}

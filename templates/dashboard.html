@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="summary-cards">
+        <div class="card">
+            <h2>Total Expenses</h2>
+            <p class="amount">RM {{ "{:,.2f}".format(total_expenses) }}</p>
+        </div>
+        <div class="card">
+            <h2>Total Guests</h2>
+            <p class="amount">{{ guest_count }}</p>
+        </div>
+        <div class="card">
+            <h2>Total Pax</h2>
+            <p class="amount">{{ total_pax }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-sections">
+        <div class="section">
+            <h2>Expense Categories</h2>
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense['category'] }}</td>
+                        <td>RM {{ "{:,.2f}".format(expense['total']) }}</td>
+                        <td>{{ "{:.1f}%".format(expense['total'] / total_expenses * 100) if total_expenses > 0 else "0%" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Guest Summary by Side</h2>
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Side</th>
+                        <th>Guests</th>
+                        <th>Total Pax</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for side in guest_summary %}
+                    <tr>
+                        <td>{{ side['side'] }}</td>
+                        <td>{{ side['count'] }}</td>
+                        <td>{{ side['total_pax'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

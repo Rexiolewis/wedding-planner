@@ -1,0 +1,18 @@
+
+DROP TABLE IF EXISTS expenses;
+CREATE TABLE expenses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item TEXT NOT NULL,
+    category TEXT NOT NULL,
+    cost REAL NOT NULL,
+    date TEXT NOT NULL
+);
+
+DROP TABLE IF EXISTS guests;
+CREATE TABLE guests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    side TEXT NOT NULL,
+    pax INTEGER NOT NULL,
+    status TEXT NOT NULL
+);
