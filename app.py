@@ -6,12 +6,15 @@ import os
 app = Flask(__name__)
 
 # Database configuration
-DATABASE = 'wedding.db'
+DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wedding.db')
+SCHEMA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scheme.sql')
 
 def get_db():
     if 'db' not in g:
-        # Make sure the instance folder exists
-        os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
+        # Ensure database directory exists
+        db_dir = os.path.dirname(DATABASE)
+        if db_dir:  # Only create directory if path is not empty
+            os.makedirs(db_dir, exist_ok=True)
         g.db = sqlite3.connect(DATABASE)
         g.db.row_factory = sqlite3.Row
     return g.db
@@ -25,7 +28,7 @@ def close_db(error):
 def init_db():
     db = get_db()
     try:
-        with app.open_resource('scheme.sql', mode='r') as f:
+        with open(SCHEMA_FILE, 'r') as f:
             db.cursor().executescript(f.read())
         db.commit()
     except Exception as e:
