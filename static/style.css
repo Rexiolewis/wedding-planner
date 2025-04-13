@@ -582,3 +582,78 @@ tbody tr:hover {
         left: 0;
     }
 }
+
+/* Styles for action buttons */
+.action-column {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.edit-btn, .delete-btn, .cancel-btn {
+    padding: 0.4rem 0.7rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    margin: 0 0.2rem;
+}
+
+.edit-btn {
+    background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+    color: #333;
+}
+
+.edit-btn:hover {
+    background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
+    color: white;
+    margin-left: 0.5rem;
+}
+
+.cancel-btn:hover {
+    background: linear-gradient(135deg, #757575 0%, #9E9E9E 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Add flash messages styles */
+.flash-messages {
+    margin-bottom: 1.5rem;
+}
+
+.flash-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.flash-success {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #C8E6C9;
+}
+
+.flash-error {
+    background-color: #FFEBEE;
+    color: #C62828;
+    border: 1px solid #FFCDD2;
+}

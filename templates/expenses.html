@@ -66,6 +66,10 @@
                     <td>{{ expense['item'] }}</td>
                     <td>{{ expense['category'] }}</td>
                     <td>RM {{ "{:,.2f}".format(expense['cost']) }}</td>
+                    <td class="action-column">
+                        <button class="edit-btn" onclick="editExpense({{ expense['id'] }}, '{{ expense['item'] }}', '{{ expense['category'] }}', {{ expense['cost'] }})">Edit</button>
+                        <button class="delete-btn" onclick="confirmDeleteExpense({{ expense['id'] }})">Remove</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -75,6 +79,55 @@
 
 <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 <script>
+// For editing expenses
+function editExpense(id, item, category, cost) {
+    // Populate the form with existing data
+    document.getElementById('item').value = item;
+    document.getElementById('category').value = category;
+    document.getElementById('cost').value = cost;
+    
+    // Change form action and button text
+    const form = document.querySelector('form');
+    form.action = `/expenses/edit/${id}`;
+    
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Update Expense';
+    
+    // Add a cancel button if it doesn't exist
+    if (!document.getElementById('cancelEdit')) {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.id = 'cancelEdit';
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'cancel-btn';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = resetForm;
+        submitBtn.parentNode.insertBefore(cancelBtn, submitBtn.nextSibling);
+    }
+    
+    // Scroll to form
+    form.scrollIntoView({behavior: 'smooth'});
+}
+
+function resetForm() {
+    // Reset the form
+    const form = document.querySelector('form');
+    form.reset();
+    form.action = '/expenses';
+    
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Add Expense';
+    
+    // Remove cancel button if it exists
+    const cancelBtn = document.getElementById('cancelEdit');
+    if (cancelBtn) cancelBtn.remove();
+}
+
+function confirmDeleteExpense(id) {
+    if (confirm('Are you sure you want to delete this expense?')) {
+        window.location.href = `/expenses/delete/${id}`;
+    }
+}
+
 function exportToExcel() {
     const table = document.getElementById('expenseTable');
     const wb = XLSX.utils.table_to_book(table, {sheet: "Expenses"});

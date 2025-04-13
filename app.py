@@ -141,6 +141,61 @@ def guests():
     guests = db.execute('SELECT * FROM guests ORDER BY name').fetchall()
     return render_template('guests.html', guests=guests)
 
+@app.route('/expenses/edit/<int:id>', methods=['POST'])
+@login_required
+def edit_expense(id):
+    if request.method == 'POST':
+        item = request.form['item']
+        category = request.form['category']
+        cost = float(request.form['cost'])
+        
+        db = get_db()
+        db.execute('UPDATE expenses SET item = ?, category = ?, cost = ? WHERE id = ?',
+                  [item, category, cost, id])
+        db.commit()
+        
+        flash('Expense updated successfully!', 'success')
+        return redirect(url_for('expenses'))
+
+@app.route('/expenses/delete/<int:id>')
+@login_required
+def delete_expense(id):
+    db = get_db()
+    db.execute('DELETE FROM expenses WHERE id = ?', [id])
+    db.commit()
+    
+    flash('Expense deleted successfully!', 'success')
+    return redirect(url_for('expenses'))
+
+@app.route('/guests/edit/<int:id>', methods=['POST'])
+@login_required
+def edit_guest(id):
+    if request.method == 'POST':
+        name = request.form['name']
+        side = request.form['side']
+        pax = int(request.form['pax'])
+        status = request.form['status']
+        
+        db = get_db()
+        db.execute('UPDATE guests SET name = ?, side = ?, pax = ?, status = ? WHERE id = ?',
+                  [name, side, pax, status, id])
+        db.commit()
+        
+        flash('Guest updated successfully!', 'success')
+        return redirect(url_for('guests'))
+
+@app.route('/guests/delete/<int:id>')
+@login_required
+def delete_guest(id):
+    db = get_db()
+    db.execute('DELETE FROM guests WHERE id = ?', [id])
+    db.commit()
+    
+    flash('Guest deleted successfully!', 'success')
+    return redirect(url_for('guests'))
+
+
+
 if __name__ == '__main__':
     # Initialize database if running locally
     if not os.path.exists(DATABASE):

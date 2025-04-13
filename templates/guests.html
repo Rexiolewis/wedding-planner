@@ -58,6 +58,10 @@
                     <td>{{ guest['pax'] }}</td>
                     <td>{{ guest['side'] }}</td>
                     <td>{{ guest['status'] }}</td>
+                    <td class="action-column">
+                        <button class="edit-btn" onclick="editGuest({{ guest['id'] }}, '{{ guest['name'] }}', {{ guest['pax'] }}, '{{ guest['side'] }}', '{{ guest['status'] }}')">Edit</button>
+                        <button class="delete-btn" onclick="confirmDeleteGuest({{ guest['id'] }})">Remove</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -67,6 +71,56 @@
 
 <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 <script>
+// For editing guests
+function editGuest(id, name, pax, side, status) {
+    // Populate the form with existing data
+    document.getElementById('name').value = name;
+    document.getElementById('pax').value = pax;
+    document.getElementById('side').value = side;
+    document.getElementById('status').value = status;
+    
+    // Change form action and button text
+    const form = document.querySelector('form');
+    form.action = `/guests/edit/${id}`;
+    
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Update Guest';
+    
+    // Add a cancel button if it doesn't exist
+    if (!document.getElementById('cancelEdit')) {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.id = 'cancelEdit';
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'cancel-btn';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = resetForm;
+        submitBtn.parentNode.insertBefore(cancelBtn, submitBtn.nextSibling);
+    }
+    
+    // Scroll to form
+    form.scrollIntoView({behavior: 'smooth'});
+}
+
+function resetForm() {
+    // Reset the form
+    const form = document.querySelector('form');
+    form.reset();
+    form.action = '/guests';
+    
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Add Guest';
+    
+    // Remove cancel button if it exists
+    const cancelBtn = document.getElementById('cancelEdit');
+    if (cancelBtn) cancelBtn.remove();
+}
+
+function confirmDeleteGuest(id) {
+    if (confirm('Are you sure you want to delete this guest?')) {
+        window.location.href = `/guests/delete/${id}`;
+    }
+}
+
 function exportToExcel() {
     const table = document.getElementById('guestTable');
     const wb = XLSX.utils.table_to_book(table, {sheet: "Guests"});
