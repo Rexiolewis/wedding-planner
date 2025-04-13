@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian Wedding Planner - {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="{% if 'logged_in' not in session %}not-authenticated{% endif %}">
     <nav>
         <div class="nav-wrapper">
-            <h1>Indian Wedding Planner</h1>
+            <h1>Sara & Lavi's Wedding Journey</h1>
             {% if 'logged_in' in session %}
             <ul>
                 <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
@@ -24,5 +25,9 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        // Add any JavaScript if needed
+    </script>
 </body>
 </html>
