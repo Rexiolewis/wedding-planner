@@ -1,19 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for, g
+from flask import Flask, render_template, request, redirect, url_for, g, session, flash
 import sqlite3
 from datetime import datetime
 import os
+from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = 'S@r@WedsL@vi2026'  # Change this to a secure secret key
+
+# User credentials
+USERNAME = 'LS'
+PASSWORD = 'S@r@WedsL@vi2026'
 
 # Database configuration
 DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wedding.db')
 SCHEMA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scheme.sql')
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'logged_in' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 def get_db():
     if 'db' not in g:
         # Ensure database directory exists
         db_dir = os.path.dirname(DATABASE)
-        if db_dir:  # Only create directory if path is not empty
+        if db_dir:
             os.makedirs(db_dir, exist_ok=True)
         g.db = sqlite3.connect(DATABASE)
         g.db.row_factory = sqlite3.Row
@@ -35,8 +49,27 @@ def init_db():
         print(f"Error initializing database: {e}")
         db.rollback()
 
-# Routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if username == USERNAME and password == PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('dashboard'))
+        else:
+            return render_template('login.html', error='Invalid username or password')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def dashboard():
     # Initialize database if it doesn't exist
     if not os.path.exists(DATABASE):
@@ -71,6 +104,7 @@ def dashboard():
                          guest_summary=guest_summary)
 
 @app.route('/expenses', methods=['GET', 'POST'])
+@login_required
 def expenses():
     db = get_db()
     
@@ -89,6 +123,7 @@ def expenses():
     return render_template('expenses.html', expenses=expenses)
 
 @app.route('/guests', methods=['GET', 'POST'])
+@login_required
 def guests():
     db = get_db()
     

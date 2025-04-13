@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,15 +6,18 @@
     <title>Indian Wedding Planner - {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="{% if 'logged_in' not in session %}not-authenticated{% endif %}">
     <nav>
         <div class="nav-wrapper">
             <h1>Indian Wedding Planner</h1>
+            {% if 'logged_in' in session %}
             <ul>
                 <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
                 <li><a href="{{ url_for('expenses') }}">Expenses</a></li>
                 <li><a href="{{ url_for('guests') }}">Guests</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
+            {% endif %}
         </div>
     </nav>
     
